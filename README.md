@@ -6,6 +6,9 @@ Telegram 频道克隆机器人，支持多账号、媒体组、过滤规则及�
 
 - 联系客服：https://t.me/vvvvvcp
 - 官方电报频道：https://t.me/btbcc
+- <img width="1170" height="1311" alt="8f518dbe569598b26e94b0179980c370" src="https://github.com/user-attachments/assets/05f5d8f1-0149-486f-bb7f-7c089264928b" />
+<img width="1305" height="849" alt="d5d9613c8a167c64a838d1576828cca4" src="https://github.com/user-attachments/assets/c5f95ce6-6a36-4cd1-b873-c93a539b8f26" />
+
 
 ---
 
