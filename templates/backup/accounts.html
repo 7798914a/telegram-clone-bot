@@ -1,0 +1,72 @@
+<h4>账号管理</h4>
+
+<div class="card mb-3">
+    <div class="card-header">添加TG账号</div>
+    <div class="card-body">
+        <form method="post" action="/accounts/add">
+            <div class="row g-2 align-items-end">
+                <div class="col-md-3"><input type="text" class="form-control" name="phone" required placeholder="手机号"></div>
+                <div class="col-md-2"><input type="number" class="form-control" name="api_id" required placeholder="API ID"></div>
+                <div class="col-md-3"><input type="text" class="form-control" name="api_hash" required placeholder="API Hash"></div>
+                <div class="col-md-2"><button type="submit" class="btn btn-primary w-100">保存并登录</button></div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if pending_account %}
+<div class="card mb-3 border-primary">
+    <div class="card-header bg-primary text-white">验证</div>
+    <div class="card-body">
+{% if pending_account.status == 'waiting_code' %}
+<form method="post" action="/accounts/verify"><input type="hidden" name="account_id" value="{{pending_account.id}}">
+<div class="row g-2"><div class="col-md-6"><input type="text" class="form-control" name="code" required placeholder="输入验证码" autofocus></div>
+<div class="col-md-3"><button class="btn btn-success w-100">验证</button></div>
+<div class="col-md-3"><a href="/accounts/cancel/{{pending_account.id}}" class="btn btn-outline-danger w-100">取消</a></div></div></form>
+{% elif pending_account.status == 'waiting_2fa' %}
+<form method="post" action="/accounts/verify"><input type="hidden" name="account_id" value="{{pending_account.id}}">
+<div class="row g-2"><div class="col-md-6"><input type="password" class="form-control" name="code" required placeholder="二次验证密码" autofocus></div>
+<div class="col-md-3"><button class="btn btn-warning w-100">验证</button></div>
+<div class="col-md-3"><a href="/accounts/cancel/{{pending_account.id}}" class="btn btn-outline-danger w-100">取消</a></div></div></form>
+{% elif pending_account.status in ('sending_code','connecting') %}
+<div class="alert alert-info mb-0">处理中...<meta http-equiv="refresh" content="2"></div>
+{% elif pending_account.status == 'connected' %}
+<div class="alert alert-success mb-0">登录成功！<a href="/accounts">刷新</a></div>
+{% elif pending_account.status == 'error' %}
+<div class="alert alert-danger mb-0">{{pending_account.error}}</div>
+{% elif pending_account.status == 'timeout' %}
+<div class="alert alert-warning mb-0">超时</div>
+{% endif %}
+</div></div>
+{% endif %}
+
+<div class="card">
+    <div class="card-header">账号列表</div>
+    <div class="card-body">
+{% if accounts %}
+<table class="table table-sm mb-0">
+<thead><tr><th>ID</th><th>手机号</th><th>登录状态</th><th>使用状态</th><th>操作</th></tr></thead>
+<tbody>
+{% for a in accounts %}
+<tr>
+    <td>#{{a['id']}}</td>
+    <td>{{a['phone']}}</td>
+    <td>
+        {% if a['status']=='connected' %}<span class="badge bg-success">✅ 已登录</span>
+        {% elif a['status']=='pending' %}<span class="badge bg-warning">⏳ 待验证</span>
+        {% elif a['status']=='error' %}<span class="badge bg-danger">❌ 错误</span>
+        {% else %}<span class="badge bg-secondary">{{a['status']}}</span>{% endif %}
+    </td>
+    <td>
+        {% if a['is_assigned'] %}<span class="badge bg-danger">🔄 使用中</span>
+        {% else %}<span class="badge bg-success">✅ 空闲</span>{% endif %}
+    </td>
+    <td>
+        <a href="/accounts/{{a['id']}}/login" class="btn btn-outline-primary btn-sm">登录</a>
+        <form method="post" action="/accounts/{{a['id']}}/delete" style="display:inline" onsubmit="return confirm('确定删除账号 #{{a['id']}}？该账号的任务记录也会删除')"><button class="btn btn-outline-danger btn-sm" {% if a['is_assigned'] %}disabled{% endif %}>删除</button></form>
+    </td>
+</tr>
+{% endfor %}
+</tbody></table>
+{% else %}<p class="text-muted mb-0">暂无账号</p>{% endif %}
+</div></div>

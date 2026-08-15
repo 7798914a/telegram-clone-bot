@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h4>用户管理</h4>
+
+<!-- 手动充值表单 -->
+<div class="card mb-3">
+    <div class="card-header">💰 手动充值</div>
+    <div class="card-body">
+        <form action="/users/recharge" method="post">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Telegram ID</label>
+                    <input type="number" name="telegram_id" class="form-control" placeholder="例如：6212164114" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">充值金额 (¥)</label>
+                    <input type="number" name="amount" class="form-control" step="0.01" placeholder="例如：50" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">备注</label>
+                    <input type="text" name="note" class="form-control" placeholder="手动充值">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">确认充值</button>
+        </form>
+    </div>
+</div>
+
+<!-- 用户列表 -->
+<div class="card">
+    <div class="card-header">👥 用户列表</div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead><tr><th>ID</th><th>Telegram ID</th><th>用户名</th><th>VIP</th><th>余额</th><th>注册时间</th></tr></thead>
+                <tbody>
+                {% for u in users %}
+                <tr>
+                    <td>{{ u.id }}</td>
+                    <td>{{ u.telegram_id }}</td>
+                    <td>{{ u.username or '-' }}</td>
+                    <td>{{ '👑 VIP' if u.is_vip else '普通' }}</td>
+                    <td>¥{{ u.balance }}</td>
+                    <td>{{ u.created_at.strftime('%Y-%m-%d %H:%M') if u.created_at else '-' }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

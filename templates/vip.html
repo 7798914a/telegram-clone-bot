@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h4>VIP 用户管理</h4>
+
+<div class="card mb-3">
+    <div class="card-header">👑 VIP用户</div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead><tr><th>ID</th><th>Telegram ID</th><th>用户名</th><th>到期时间</th><th>操作</th></tr></thead>
+                <tbody>
+                {% for u in vip_users %}
+                <tr>
+                    <td>{{ u.id }}</td>
+                    <td>{{ u.telegram_id }}</td>
+                    <td>{{ u.username or '-' }}</td>
+                    <td>{{ u.vip_expires_at.strftime('%Y-%m-%d %H:%M') if u.vip_expires_at else '永久' }}</td>
+                    <td>
+                        <button class="btn btn-sm btn-danger" onclick="if(confirm('取消VIP？')){fetch('/vip/remove/{{ u.id }}',{method:'POST'}).then(()=>location.reload())}">取消VIP</button>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header">🎁 添加VIP</div>
+    <div class="card-body">
+        <form method="post" action="/vip/add" class="row g-3">
+            <div class="col-md-4"><input type="number" name="telegram_id" class="form-control" placeholder="Telegram ID" required></div>
+            <div class="col-md-4"><input type="number" name="days" class="form-control" placeholder="天数（0=永久）" value="30"></div>
+            <div class="col-md-4"><button class="btn btn-success w-100">👑 设为VIP</button></div>
+        </form>
+    </div>
+</div>
+{% endblock %}

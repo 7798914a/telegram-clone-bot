@@ -1,0 +1,36 @@
+<h4>广告过滤设置</h4>
+
+<div class="card">
+    <div class="card-body">
+        <form method="post" action="/filters/update">
+            <div class="form-check form-switch mb-2">
+                <input class="form-check-input" type="checkbox" name="filter_ads" value="1" {% if settings.get('filter_ads')=='1' %}checked{% endif %}>
+                <label class="form-check-label">过滤含广告关键词的消息</label>
+            </div>
+            <div class="form-check form-switch mb-2">
+                <input class="form-check-input" type="checkbox" name="filter_buttons" value="1" {% if settings.get('filter_buttons')=='1' %}checked{% endif %}>
+                <label class="form-check-label">过滤带按钮的消息</label>
+            </div>
+            <div class="form-check form-switch mb-2">
+                <input class="form-check-input" type="checkbox" name="filter_links" value="1" {% if settings.get('filter_links')=='1' %}checked{% endif %}>
+                <label class="form-check-label">过滤纯链接消息</label>
+            </div>
+            <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" name="filter_mentions" value="1" {% if settings.get('filter_mentions')=='1' %}checked{% endif %}>
+                <label class="form-check-label">过滤过多@用户名的消息</label>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">广告关键词（逗号分隔）</label>
+                <input type="text" class="form-control" name="ad_keywords" value="{{settings.get('ad_keywords','')}}">
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">最大@数量（超过则过滤）</label>
+                <input type="number" class="form-control" name="max_mentions" value="{{settings.get('max_mentions','3')}}" min="1" style="max-width:100px">
+            </div>
+            
+            <button class="btn btn-primary">保存设置</button>
+        </form>
+    </div>
+</div>

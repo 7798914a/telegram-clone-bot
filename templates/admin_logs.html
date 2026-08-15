@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h4>操作日志</h4>
+<div class="card">
+    <div class="card-header">最近操作记录</div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead><tr><th>时间</th><th>操作</th><th>详情</th><th>操作人</th></tr></thead>
+                <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td>{{ log.created_at.strftime('%Y-%m-%d %H:%M') if log.created_at else '-' }}</td>
+                    <td>{{ log.action }}</td>
+                    <td>{{ log.detail }}</td>
+                    <td>{{ log.operator }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

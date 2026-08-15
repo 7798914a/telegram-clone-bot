@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h4>账号管理</h4>
+
+{% if error %}
+<div class="alert alert-danger">{{ error }}</div>
+{% endif %}
+
+<div class="card mb-3">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span>账号列表</span>
+        <a href="/accounts" class="btn btn-sm btn-primary">🔄 刷新</a>
+    </div>
+    <div class="card-body">
+        <!-- 添加账号 -->
+        <form method="post" action="/accounts/add" class="row g-3 mb-3">
+            <div class="col-md-4"><input type="text" name="phone" class="form-control" placeholder="手机号" required></div>
+            <div class="col-md-3"><input type="number" name="api_id" class="form-control" placeholder="API ID" required></div>
+            <div class="col-md-3"><input type="text" name="api_hash" class="form-control" placeholder="API Hash" required></div>
+            <div class="col-md-2"><button class="btn btn-success w-100">➕ 添加</button></div>
+        </form>
+
+        <!-- 验证码/2FA输入区域 -->
+        {% if pending_account %}
+        <div class="alert alert-warning" id="login-prompt">
+            <strong>📲 登录验证</strong><br>
+            账号: <b>{{ pending_account.phone }}</b><br>
+            状态: <span id="login-status">{{ pending_account.status }}</span>
+            <div id="code-area" class="mt-2">
+                {% if pending_account.status == 'waiting_code' %}
+                <form method="post" action="/accounts/verify" class="row g-2">
+                    <input type="hidden" name="account_id" value="{{ pending_account.id }}">
+                    <div class="col-md-4">
+                        <input type="text" name="code" class="form-control" placeholder="请输入验证码" required autofocus>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-primary w-100">✅ 验证</button>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="/accounts/cancel/{{ pending_account.id }}" class="btn btn-danger w-100">❌ 取消</a>
+                    </div>
+                </form>
+                {% elif pending_account.status == 'waiting_2fa' %}
+                <form method="post" action="/accounts/verify" class="row g-2">
+                    <input type="hidden" name="account_id" value="{{ pending_account.id }}">
+                    <div class="col-md-4">
+                        <input type="password" name="code" class="form-control" placeholder="请输入2FA密码" required autofocus>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-primary w-100">✅ 验证</button>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="/accounts/cancel/{{ pending_account.id }}" class="btn btn-danger w-100">❌ 取消</a>
+                    </div>
+                </form>
+                {% elif pending_account.status == 'error' %}
+                <div class="text-danger">❌ 错误: {{ pending_account.error }}</div>
+                <a href="/accounts/cancel/{{ pending_account.id }}" class="btn btn-danger btn-sm mt-2">取消</a>
+                {% elif pending_account.status == 'timeout' %}
+                <div class="text-danger">⏰ 验证超时，请重新登录</div>
+                <a href="/accounts/cancel/{{ pending_account.id }}" class="btn btn-danger btn-sm mt-2">取消</a>
+                {% else %}
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <span>正在连接/发送验证码，请稍候...</span>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- 账号表格 -->
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>手机号</th>
+                        <th>用户名</th>
+                        <th>连接状态</th>
+                        <th>分配状态</th>
+                        <th>代理</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for acc in accounts %}
+                <tr>
+                    <td>{{ acc.id }}</td>
+                    <td>{{ acc.phone or '-' }}</td>
+                    <td>{{ acc.username or '-' }}</td>
+                    <td>
+                        {% if acc.status == 'connected' %}
+                        <span class="badge bg-success">✅ 已连接</span>
+                        {% elif acc.status == 'waiting_code' %}
+                        <span class="badge bg-warning">⏳ 等待验证码</span>
+                        {% elif acc.status == 'waiting_2fa' %}
+                        <span class="badge bg-warning">⏳ 等待2FA</span>
+                        {% elif acc.status == 'pending' %}
+                        <span class="badge bg-secondary">🕒 待登录</span>
+                        {% elif acc.status == 'error' %}
+                        <span class="badge bg-danger">❌ 错误</span>
+                        {% elif acc.status == 'timeout' %}
+                        <span class="badge bg-secondary">⏰ 超时</span>
+                        {% else %}
+                        <span class="badge bg-secondary">{{ acc.status }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if acc.is_assigned %}
+                        <span class="badge bg-warning">使用中</span>
+                        {% else %}
+                        <span class="badge bg-success">空闲</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if acc.proxy_host %}
+                        {{ acc.proxy_host }}:{{ acc.proxy_port }}
+                        {% else %}
+                        <span class="text-muted">无</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#proxyModal{{ acc.id }}">设置代理</button>
+                        {% if acc.proxy_host %}
+                        <form action="/accounts/clear_proxy" method="post" style="display:inline;" onsubmit="return confirm('确定重置代理吗？');">
+                            <input type="hidden" name="account_id" value="{{ acc.id }}">
+                            <button type="submit" class="btn btn-sm btn-warning">重置代理</button>
+                        </form>
+                        {% endif %}
+                        {% if acc.is_assigned %}
+                        <form action="/accounts/release" method="post" style="display:inline;">
+                            <input type="hidden" name="account_id" value="{{ acc.id }}">
+                            <button type="submit" class="btn btn-sm btn-danger">释放</button>
+                        </form>
+                        {% endif %}
+                        {% if acc.status != 'connected' and acc.status != 'waiting_code' and acc.status != 'waiting_2fa' %}
+                        <a href="/accounts/{{ acc.id }}/login" class="btn btn-sm btn-outline-secondary">🔑 登录</a>
+                        {% endif %}
+                        <button class="btn btn-sm btn-outline-danger" onclick="if(confirm('确定删除？')){fetch('/accounts/{{ acc.id }}/delete',{method:'POST'}).then(()=>location.reload())}">🗑️</button>
+                    </td>
+                </tr>
+
+                <!-- 代理设置模态框 -->
+                <div class="modal fade" id="proxyModal{{ acc.id }}" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">设置代理 - 账号 #{{ acc.id }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <form action="/accounts/update_proxy" method="post">
+                                <div class="modal-body">
+                                    <input type="hidden" name="account_id" value="{{ acc.id }}">
+                                    <div class="mb-3">
+                                        <label class="form-label">代理类型</label>
+                                        <select name="proxy_type" class="form-select">
+                                            <option value="socks5" {{ 'selected' if acc.proxy_type == 'socks5' else '' }}>SOCKS5</option>
+                                            <option value="http" {{ 'selected' if acc.proxy_type == 'http' else '' }}>HTTP</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">服务器 (IP/域名)</label>
+                                        <input type="text" name="proxy_host" class="form-control" value="{{ acc.proxy_host or '' }}" autocomplete="off">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">端口</label>
+                                        <input type="number" name="proxy_port" class="form-control" value="{{ acc.proxy_port or '' }}" autocomplete="off">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">用户名（可选）</label>
+                                        <input type="text" name="proxy_username" class="form-control" value="{{ acc.proxy_username or '' }}" autocomplete="off">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">密码（可选）</label>
+                                        <input type="password" name="proxy_password" class="form-control" value="{{ acc.proxy_password or '' }}" autocomplete="new-password">
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                                    <button type="submit" class="btn btn-primary">保存代理</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+// 自动刷新：如果有待输入的验证码/2FA，停止自动刷新；否则每3秒刷新一次
+document.addEventListener('DOMContentLoaded', function() {
+    const loginStatus = document.getElementById('login-status');
+    if (loginStatus) {
+        const status = loginStatus.textContent.trim();
+        if (status !== 'waiting_code' && status !== 'waiting_2fa') {
+            setTimeout(() => {
+                location.reload();
+            }, 3000);
+        }
+    } else {
+        // 如果页面上没有待处理账号，但可能有正在登录的账号，也定期刷新以捕捉验证码状态
+        // 简单起见：仅当 URL 含有 login=1 时刷新（如果从登录链接跳转）
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('login') === 'started') {
+            setTimeout(() => {
+                location.reload();
+            }, 3000);
+        }
+    }
+});
+</script>
+{% endblock %}

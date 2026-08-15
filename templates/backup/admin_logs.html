@@ -1,0 +1,20 @@
+<h4>操作日志</h4>
+<div class="card">
+    <div class="card-header">最近操作记录</div>
+    <div class="card-body">
+{% if logs %}
+<table class="table table-sm mb-0">
+<thead><tr><th>ID</th><th>操作</th><th>详情</th><th>操作人</th><th>时间</th></tr></thead>
+<tbody>
+{% for l in logs %}
+<tr>
+<td>#{{l['id']}}</td>
+<td>{{l['action']}}</td>
+<td>{{l['detail']}}</td>
+<td>{{l['operator']}}</td>
+<td>{{l['created_at']}}</td>
+</tr>
+{% endfor %}
+</tbody></table>
+{% else %}<p class="text-muted mb-0">暂无日志</p>{% endif %}
+</div></div>

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">💰 价格管理</h2>
+
+    <div class="card">
+        <div class="card-header">
+            <h5>📊 克隆价格设置</h5>
+        </div>
+        <div class="card-body">
+            <form action="/prices/update" method="post">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">👤 普通模式</label>
+                        <div class="input-group">
+                            <span class="input-group-text">¥</span>
+                            <input type="number" name="full" class="form-control" step="0.01" value="{{ full or 5 }}" required>
+                        </div>
+                        <small class="text-muted">1个账号克隆</small>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">👥 双账号模式</label>
+                        <div class="input-group">
+                            <span class="input-group-text">¥</span>
+                            <input type="number" name="dual" class="form-control" step="0.01" value="{{ dual or 8 }}" required>
+                        </div>
+                        <small class="text-muted">2个账号轮替</small>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">🔗 从链接</label>
+                        <div class="input-group">
+                            <span class="input-group-text">¥</span>
+                            <input type="number" name="from_link" class="form-control" step="0.01" value="{{ from_link or 3 }}" required>
+                        </div>
+                        <small class="text-muted">从指定帖子开始</small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">📡 实时监控</label>
+                        <div class="input-group">
+                            <span class="input-group-text">¥</span>
+                            <input type="number" name="monitor" class="form-control" step="0.01" value="{{ monitor or 0 }}" required>
+                        </div>
+                        <small class="text-muted">VIP专属</small>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">🔢 按条数</label>
+                        <div class="input-group">
+                            <span class="input-group-text">¥</span>
+                            <input type="number" name="by_count" class="form-control" step="0.01" value="{{ by_count or 0 }}" required>
+                        </div>
+                        <small class="text-muted">按帖子数量计费</small>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">💾 保存价格</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

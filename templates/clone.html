@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2><i class="bi bi-clipboard-check"></i>创建克隆任务</h2>
+<div class="card"><div class="card-header"><i class="bi bi-play-circle"></i> 新建克隆</div><div class="card-body">
+<form method="post" action="/clone/start">
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label">📥 源频道</label>
+            <input type="text" name="source" class="form-control" placeholder="@source_channel" required>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label">📤 目标频道</label>
+            <input type="text" name="target" class="form-control" placeholder="@target_channel" required>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label class="form-label">📊 模式</label>
+            <select name="mode" class="form-select">
+                <option value="full">普通模式</option>
+                <option value="dual">双账号模式</option>
+                <option value="monitor">实时监控 (VIP)</option>
+            </select>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label class="form-label">📝 前缀（可选）</label>
+            <input type="text" name="prefix" class="form-control" placeholder="前缀文本">
+        </div>
+        <div class="col-md-4 mb-3">
+            <label class="form-label">📝 后缀（可选）</label>
+            <input type="text" name="suffix" class="form-control" placeholder="后缀文本">
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">🚀 开始克隆</button>
+</form>
+</div></div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2><i class="bi bi-speedometer2"></i>仪表盘</h2>
+<div class="row g-4">
+    <div class="col-md-4"><div class="card text-center p-3"><div class="stat-number">{{accounts|length}}</div><div class="stat-label">TG账号数</div></div></div>
+    <div class="col-md-4"><div class="card text-center p-3"><div class="stat-number">{{tasks|length}}</div><div class="stat-label">任务总数</div></div></div>
+    <div class="col-md-4"><div class="card text-center p-3"><div class="stat-number">{{queue_len}}</div><div class="stat-label">队列等待</div></div></div>
+</div>
+<div class="card mt-4">
+    <div class="card-header">📋 最近任务</div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead><tr><th>ID</th><th>源频道</th><th>目标频道</th><th>状态</th><th>克隆数</th></tr></thead>
+                <tbody>
+                {% for t in tasks %}
+                <tr>
+                    <td>{{ t.id }}</td>
+                    <td>{{ t.source_channel }}</td>
+                    <td>{{ t.target_channel }}</td>
+                    <td><span class="badge bg-{{ 'success' if t.status == 'done' else 'warning' if t.status == 'running' else 'secondary' }}">{{ t.status }}</span></td>
+                    <td>{{ t.cloned }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,13 @@
+<h4>联系客服设置</h4>
+<div class="card">
+    <div class="card-body">
+        <form method="post" action="/support/update">
+            <div class="mb-3">
+                <label class="form-label">客服链接（TG用户名或链接）</label>
+                <input type="text" class="form-control" name="support_link" value="{{link}}" placeholder="https://t.me/your_support">
+                <small class="text-muted">用户点击"联系客服"时跳转到此链接</small>
+            </div>
+            <button class="btn btn-primary">保存</button>
+        </form>
+    </div>
+</div>

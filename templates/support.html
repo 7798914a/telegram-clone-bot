@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h4>联系客服设置</h4>
+<div class="card">
+    <div class="card-body">
+        <form method="post" action="/support/update">
+            <div class="mb-3">
+                <label class="form-label">客服链接</label>
+                <input type="text" name="support_link" class="form-control" value="{{ support_link or 'https://t.me/your_support' }}">
+            </div>
+            <button type="submit" class="btn btn-primary">💾 保存</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

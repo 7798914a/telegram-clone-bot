@@ -1,0 +1,16 @@
+<h2><i class="bi bi-speedometer2"></i>仪表盘</h2>
+<div class="row g-4">
+    <div class="col-md-4"><div class="card text-center p-3"><div class="stat-number">{{accounts|length}}</div><div class="stat-label">TG账号数</div></div></div>
+    <div class="col-md-4"><div class="card text-center p-3"><div class="stat-number">{{tasks|length}}</div><div class="stat-label">克隆任务数</div></div></div>
+    <div class="col-md-4"><div class="card text-center p-3"><div class="stat-number">{{queue_len}}</div><div class="stat-label">排队中</div></div></div>
+</div>
+<div class="card mt-4"><div class="card-header d-flex justify-content-between align-items-center"><span><i class="bi bi-list-task"></i> 最近任务</span><a href="/clone" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> 新建克隆</a></div>
+<div class="card-body">{% if tasks %}<table class="table"><thead><tr><th>ID</th><th>源频道</th><th>目标频道</th><th>进度</th><th>状态</th></tr></thead><tbody>{% for t in tasks %}<tr><td>#{{t['id']}}</td><td>{{t['source_channel']}}</td><td>{{t['target_channel']}}</td><td>{{t['cloned']}}/{{t['max_posts'] or '∞'}}</td><td>
+{% if t['status']=='done' %}<span class="badge bg-success">✅ 完成</span>
+{% elif t['status']=='running' %}<span class="badge bg-primary">🔄 运行</span>
+{% elif t['status']=='checking' %}<span class="badge bg-info">🔍 检测</span>
+{% elif t['status']=='waiting_join' %}<span class="badge bg-warning">⏳ 等待</span>
+{% elif t['status']=='error' %}<span class="badge bg-danger">❌ 错误</span>
+{% elif t['status']=='cancelled' %}<span class="badge bg-secondary">❌ 取消</span>
+{% else %}<span class="badge bg-secondary">{{t['status']}}</span>{% endif %}
+</td></tr>{% endfor %}</tbody></table>{% else %}<div class="empty-state"><i class="bi bi-inbox"></i><p>暂无任务</p></div>{% endif %}</div></div>

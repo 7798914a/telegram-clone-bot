@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h4>广告过滤设置</h4>
+
+{% if success %}
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+  ✅ 设置已保存并生效
+  <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endif %}
+
+<div class="card">
+    <div class="card-header">⚙️ 过滤规则</div>
+    <div class="card-body">
+        <form method="post" action="/filters/update">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="filter_ads" id="filter_ads" value="1" {{ 'checked' if filter_ads else '' }}>
+                        <label class="form-check-label" for="filter_ads">启用广告过滤</label>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="filter_buttons" id="filter_buttons" value="1" {{ 'checked' if filter_buttons else '' }}>
+                        <label class="form-check-label" for="filter_buttons">过滤带按钮消息</label>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="filter_links" id="filter_links" value="1" {{ 'checked' if filter_links else '' }}>
+                        <label class="form-check-label" for="filter_links">过滤纯链接消息</label>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="filter_mentions" id="filter_mentions" value="1" {{ 'checked' if filter_mentions else '' }}>
+                        <label class="form-check-label" for="filter_mentions">过滤过多@提及</label>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">广告关键词（逗号分隔）</label>
+                <input type="text" name="ad_keywords" class="form-control" value="{{ ad_keywords or '广告,赞助,合作,推广' }}">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">最大@提及数</label>
+                <input type="number" name="max_mentions" class="form-control" value="{{ max_mentions or 3 }}">
+            </div>
+            <button type="submit" class="btn btn-primary">💾 保存</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

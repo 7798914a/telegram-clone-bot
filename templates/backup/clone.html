@@ -1,0 +1,9 @@
+<h2><i class="bi bi-clipboard-check"></i>创建克隆任务</h2>
+<div class="card"><div class="card-header"><i class="bi bi-play-circle"></i> 新建克隆</div><div class="card-body">
+<form method="post" action="/clone/start">
+<div class="mb-3"><label class="form-label">选择账号</label><select name="account_id" class="form-select" required><option value="">-- 选择已连接的账号 --</option>{% for a in accounts %}<option value="{{a['id']}}">{{a['phone']}}</option>{% endfor %}</select></div>
+<div class="mb-3"><label class="form-label">源频道</label><input name="source" class="form-control" placeholder="@channel" required></div>
+<div class="mb-3"><label class="form-label">目标频道</label><input name="target" class="form-control" placeholder="@mychannel" required></div>
+<div class="mb-3"><label class="form-label">克隆数量（0=全部）</label><input name="max_posts" class="form-control" type="number" value="100" min="0"></div>
+<button class="btn btn-success"><i class="bi bi-play-fill"></i> 开始克隆</button>
+</form></div></div>

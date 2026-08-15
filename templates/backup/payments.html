@@ -1,0 +1,46 @@
+<h4>充值管理</h4>
+
+<div class="card mb-3">
+    <div class="card-header">待审核</div>
+    <div class="card-body">
+{% if pending %}
+<table class="table table-sm mb-0">
+<thead><tr><th>ID</th><th>TG ID</th><th>金额</th><th>时间</th><th>操作</th></tr></thead>
+<tbody>
+{% for p in pending %}
+<tr>
+    <td>#{{p['id']}}</td>
+    <td>{{p['telegram_id']}}</td>
+    <td>¥{{p['amount']}}</td>
+    <td>{{p['created_at']}}</td>
+    <td>
+        <form method="post" action="/payments/approve/{{p['id']}}" style="display:inline"><button class="btn btn-success btn-sm">通过</button></form>
+        <form method="post" action="/payments/reject/{{p['id']}}" style="display:inline"><button class="btn btn-outline-danger btn-sm">拒绝</button></form>
+    </td>
+</tr>
+{% endfor %}
+</tbody></table>
+{% else %}<p class="text-muted mb-0">暂无待审核</p>{% endif %}
+</div></div>
+
+<div class="card">
+    <div class="card-header">交易记录（实时）</div>
+    <div class="card-body">
+{% if records %}
+<table class="table table-sm mb-0">
+<thead><tr><th>ID</th><th>TG ID</th><th>金额</th><th>类型</th><th>备注</th><th>时间</th></tr></thead>
+<tbody>
+{% for p in records %}
+<tr>
+<td>#{{p['id']}}</td>
+<td>{{p['telegram_id']}}</td>
+<td>{% if p['amount'] < 0 %}<span class="text-danger">-¥{{p['amount']|abs}}</span>{% else %}<span class="text-success">+¥{{p['amount']}}</span>{% endif %}</td>
+<td>{% if p['amount'] < 0 %}扣费{% else %}充值{% endif %}</td>
+<td>{{p['note'] or '-'}}</td>
+<td>{{p['created_at']}}</td>
+</tr>
+{% endfor %}
+</tbody></table>
+{% else %}<p class="text-muted mb-0">暂无记录</p>{% endif %}
+<small class="text-muted">⏰ 每30秒自动刷新</small>
+</div></div>

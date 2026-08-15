@@ -1,0 +1,55 @@
+<h4>任务列表</h4>
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span>共 {{total}} 个任务</span>
+        <a href="/clone" class="btn btn-primary btn-sm">新建克隆</a>
+    </div>
+    <div class="card-body">
+{% if tasks %}
+<table class="table table-sm mb-3">
+<thead><tr><th>ID</th><th>账号</th><th>源频道</th><th>目标频道</th><th>进度</th><th>状态</th><th>时间</th></tr></thead>
+<tbody>
+{% for t in tasks %}
+<tr>
+    <td>#{{t['id']}}</td>
+    <td>{{t['account_id'] or '-'}}</td>
+    <td>{{t['source_channel'][:20]}}</td>
+    <td>{{t['target_channel'][:20]}}</td>
+    <td>
+        <div class="progress" style="height:6px;width:100px"><div class="progress-bar" style="width: {{(t['cloned']/t['max_posts']*100)|int if t['max_posts'] and t['max_posts']>0 else 0}}%"></div></div>
+        <small>{{t['cloned']}}/{{t['max_posts'] or '∞'}}</small>
+    </td>
+    <td>
+        {% if t['status']=='done' %}<span class="badge bg-success">✅ 完成</span>
+        {% elif t['status']=='running' %}<span class="badge bg-primary">🔄 运行</span>
+        {% elif t['status']=='checking' %}<span class="badge bg-info">🔍 检测</span>
+        {% elif t['status']=='waiting_join' %}<span class="badge bg-warning">⏳ 等待</span>
+        {% elif t['status']=='waiting_account' %}<span class="badge bg-warning">⏳ 等号</span>
+        {% elif t['status']=='need_join' %}<span class="badge bg-danger">⚠️ 需加入</span>
+        {% elif t['status']=='cancelled' %}<span class="badge bg-secondary">❌ 取消</span>
+        {% elif t['status']=='error' %}<span class="badge bg-danger">❌ 错误</span>
+        {% else %}<span class="badge bg-secondary">{{t['status']}}</span>{% endif %}
+    </td>
+    <td><small>{{t['created_at'].strftime('%m-%d %H:%M') if t['created_at'] else ''}}</small></td>
+</tr>
+{% endfor %}
+</tbody></table>
+
+<!-- 分页 -->
+{% if total_pages > 1 %}
+<nav>
+<ul class="pagination pagination-sm mb-0">
+    <li class="page-item {{'disabled' if page<=1 else ''}}"><a class="page-link" href="/tasks?page={{page-1}}">上一页</a></li>
+    {% for i in range(1, total_pages+1) %}
+    {% if i >= page-2 and i <= page+2 %}
+    <li class="page-item {{'active' if i==page else ''}}"><a class="page-link" href="/tasks?page={{i}}">{{i}}</a></li>
+    {% endif %}
+    {% endfor %}
+    <li class="page-item {{'disabled' if page>=total_pages else ''}}"><a class="page-link" href="/tasks?page={{page+1}}">下一页</a></li>
+</ul>
+</nav>
+{% endif %}
+
+{% else %}<p class="text-muted mb-0">暂无任务</p>{% endif %}
+</div></div>
