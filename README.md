@@ -231,7 +231,6 @@ nohup python3 start.py > bot.log 2>&1 &
 |---|---|
 | BOT_TOKEN | 机器人令牌，从 @BotFather 获取 |
 | API_ID / API_HASH | 用于登录用户账号（克隆账号） |
-| STORAGE_CHANNEL_ID | 存储频道的 ID，用于临时保存采集内容或中转 |
 | ADMIN_ID | 管理员 Telegram ID，用于接收通知和管理 |
 | DATABASE_URL | PostgreSQL 连接字符串 |
 | SESSION_DIR | 存放用户账号 session 文件的目录 |
